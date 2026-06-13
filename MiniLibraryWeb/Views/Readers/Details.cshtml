@@ -1,0 +1,100 @@
+@model MiniLibraryWeb.Models.Entities.Reader
+@{
+    ViewData["Title"] = "Chi tiết Độc giả";
+    ViewData["PageTitle"] = "Lịch sử mượn trả";
+}
+
+<div style="display: flex; flex-direction: column; gap: 24px;">
+    <!-- Reader Profile Info -->
+    <div class="page-card">
+        <div class="page-card-header">
+            <div class="page-card-title">
+                <i class="fa-solid fa-address-card" style="color: var(--primary);"></i>
+                <span>Độc giả: @Model.Name</span>
+            </div>
+            <a asp-action="Index" class="btn-premium btn-premium-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+        <div class="page-card-body" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
+            <div>
+                <span style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 500;">Mã số thẻ thư viện</span>
+                <p style="font-family: monospace; font-size: 18px; font-weight: 700; color: var(--primary); margin-top: 4px;">@Model.CardNumber</p>
+            </div>
+            <div>
+                <span style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 500;">Địa chỉ Email</span>
+                <p style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 4px;">@Model.Email</p>
+            </div>
+            <div>
+                <span style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 500;">Số điện thoại</span>
+                <p style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 4px;">@Model.Phone</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Borrow History -->
+    <div class="page-card">
+        <div class="page-card-header" style="background: linear-gradient(to right, #f8fafc, #ffffff);">
+            <div class="page-card-title">
+                <i class="fa-solid fa-clock-history" style="color: var(--secondary);"></i>
+                <span>Nhật ký mượn / trả sách</span>
+            </div>
+        </div>
+        <div class="page-card-body">
+            @if (Model.BorrowTickets == null || !Model.BorrowTickets.Any())
+            {
+                <div style="text-align: center; padding: 48px; color: var(--text-muted);">
+                    <i class="fa-solid fa-receipt" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                    <p>Độc giả này chưa thực hiện giao dịch mượn sách nào.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table-premium">
+                        <thead>
+                            <tr>
+                                <th>Tên sách</th>
+                                <th>Tác giả</th>
+                                <th>Ngày mượn</th>
+                                <th>Hạn trả</th>
+                                <th>Ngày trả thực tế</th>
+                                <th>Trạng thái</th>
+                                <th style="text-align: right;">Tiền phạt trễ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ticket in Model.BorrowTickets.OrderByDescending(t => t.BorrowDate))
+                            {
+                                <tr>
+                                    <td style="font-weight: 600; color: var(--text-main);">@(ticket.Book?.Title ?? "Sách không tồn tại")</td>
+                                    <td>@(ticket.Book?.Author ?? "N/A")</td>
+                                    <td>@ticket.BorrowDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@ticket.DueDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@(ticket.ReturnDate?.ToString("dd/MM/yyyy") ?? "Chưa trả")</td>
+                                    <td>
+                                        @if (ticket.Status == "Returned")
+                                        {
+                                            <span class="badge-premium badge-success">Đã trả</span>
+                                        }
+                                        else if (ticket.Status == "Overdue" || (ticket.Status == "Borrowed" && ticket.DueDate < DateTime.Now))
+                                        {
+                                            <span class="badge-premium badge-danger">Quá hạn</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-premium badge-warning">Đang mượn</span>
+                                        }
+                                    </td>
+                                    <td style="text-align: right; font-weight: 700; color: @(ticket.FineAmount > 0 ? "var(--danger)" : "var(--text-main)");">
+                                        @(ticket.FineAmount > 0 ? ticket.FineAmount.ToString("N0") + " VND" : "0 VND")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

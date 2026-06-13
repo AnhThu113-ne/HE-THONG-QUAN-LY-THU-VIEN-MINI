@@ -1,0 +1,58 @@
+@model MiniLibraryWeb.Models.Entities.Reader
+@{
+    ViewData["Title"] = "Đăng ký Độc giả";
+    ViewData["PageTitle"] = "Đăng ký Độc giả mới";
+}
+
+<div class="page-card" style="max-width: 600px; margin: 0 auto;">
+    <div class="page-card-header">
+        <div class="page-card-title">
+            <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i>
+            <span>Thông tin tài khoản độc giả</span>
+        </div>
+        <a asp-action="Index" class="btn-premium btn-premium-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+    <div class="page-card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" style="color: var(--danger); font-size: 14px; margin-bottom: 16px;"></div>
+
+            <div class="form-group-premium">
+                <label asp-for="Name" class="form-label-premium"></label>
+                <input asp-for="Name" class="form-control-premium" placeholder="Nhập họ và tên độc giả..." />
+                <span asp-validation-for="Name" style="color: var(--danger); font-size: 12px; margin-top: 4px; display: block;"></span>
+            </div>
+
+            <div class="form-group-premium">
+                <label asp-for="Email" class="form-label-premium"></label>
+                <input asp-for="Email" type="email" class="form-control-premium" placeholder="Nhập email..." />
+                <span asp-validation-for="Email" style="color: var(--danger); font-size: 12px; margin-top: 4px; display: block;"></span>
+            </div>
+
+            <div class="form-group-premium">
+                <label asp-for="Phone" class="form-label-premium"></label>
+                <input asp-for="Phone" class="form-control-premium" placeholder="Nhập số điện thoại..." />
+                <span asp-validation-for="Phone" style="color: var(--danger); font-size: 12px; margin-top: 4px; display: block;"></span>
+            </div>
+
+            <div class="form-group-premium">
+                <label asp-for="CardNumber" class="form-label-premium"></label>
+                <input asp-for="CardNumber" class="form-control-premium" placeholder="Nhập số thẻ hoặc để trống để tự động sinh..." />
+                <span asp-validation-for="CardNumber" style="color: var(--danger); font-size: 12px; margin-top: 4px; display: block;"></span>
+            </div>
+
+            <div style="display: flex; gap: 16px; margin-top: 32px;">
+                <button type="submit" class="btn-premium btn-premium-primary" style="flex: 1;">
+                    <i class="fa-solid fa-user-plus"></i> Đăng ký độc giả
+                </button>
+                <a asp-action="Index" class="btn-premium btn-premium-secondary" style="flex: 1;">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

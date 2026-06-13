@@ -1,0 +1,69 @@
+@model IEnumerable<MiniLibraryWeb.Models.Entities.Reader>
+@{
+    ViewData["Title"] = "Danh sách Độc giả";
+    ViewData["PageTitle"] = "Quản lý Độc giả";
+}
+
+<div class="page-card">
+    <div class="page-card-header">
+        <div class="page-card-title">
+            <i class="fa-solid fa-users" style="color: var(--primary);"></i>
+            <span>Danh sách độc giả đã đăng ký</span>
+        </div>
+        <a asp-action="Create" class="btn-premium btn-premium-primary">
+            <i class="fa-solid fa-user-plus"></i> Đăng ký độc giả mới
+        </a>
+    </div>
+    <div class="page-card-body">
+        @if (!Model.Any())
+        {
+            <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                <i class="fa-solid fa-user-slash" style="font-size: 48px; margin-bottom: 16px; color: var(--text-muted);"></i>
+                <p>Chưa có độc giả nào đăng ký trong hệ thống.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table-premium">
+                    <thead>
+                        <tr>
+                            <th>Mã số thẻ</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Số điện thoại</th>
+                            <th style="text-align: center;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reader in Model)
+                        {
+                            <tr>
+                                <td style="font-family: monospace; font-weight: 700; color: var(--primary);">@reader.CardNumber</td>
+                                <td style="font-weight: 600; color: var(--text-main);">@reader.Name</td>
+                                <td>@reader.Email</td>
+                                <td>@reader.Phone</td>
+                                <td style="text-align: center;">
+                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                        <a asp-action="Details" asp-route-id="@reader.Id" class="btn-premium btn-premium-primary btn-premium-sm" style="background-color: var(--secondary);">
+                                            <i class="fa-solid fa-clock-history"></i> Lịch sử mượn
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@reader.Id" class="btn-premium btn-premium-secondary btn-premium-sm">
+                                            <i class="fa-solid fa-pen-to-square"></i> Sửa
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@reader.Id" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa độc giả này không?');" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-premium btn-premium-danger btn-premium-sm">
+                                                <i class="fa-solid fa-trash"></i> Xóa
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
