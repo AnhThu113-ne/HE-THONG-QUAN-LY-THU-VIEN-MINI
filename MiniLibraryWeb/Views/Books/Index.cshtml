@@ -1,0 +1,83 @@
+@model IEnumerable<MiniLibraryWeb.Models.Entities.Book>
+@{
+    ViewData["Title"] = "Danh sách Sách";
+    ViewData["PageTitle"] = "Quản lý Sách";
+}
+
+<div class="page-card">
+    <div class="page-card-header">
+        <div class="search-container">
+            <form asp-controller="Books" asp-action="Index" method="get" style="display: flex; gap: 12px; width: 100%;">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" name="search" value="@ViewBag.Search" class="search-input" placeholder="Tìm theo tên sách, tác giả, thể loại..." />
+                </div>
+                <button type="submit" class="btn-premium btn-premium-primary">Tìm kiếm</button>
+            </form>
+        </div>
+        <a asp-action="Create" class="btn-premium btn-premium-primary">
+            <i class="fa-solid fa-plus"></i>
+            Thêm sách mới
+        </a>
+    </div>
+    <div class="page-card-body">
+        @if (!Model.Any())
+        {
+            <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                <i class="fa-solid fa-folder-open" style="font-size: 48px; margin-bottom: 16px; color: var(--text-muted);"></i>
+                <p>Không tìm thấy cuốn sách nào trong thư viện.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table-premium">
+                    <thead>
+                        <tr>
+                            <th>Tên sách</th>
+                            <th>Tác giả</th>
+                            <th>Thể loại</th>
+                            <th>Năm XB</th>
+                            <th style="text-align: center;">Số lượng tồn</th>
+                            <th style="text-align: center;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var book in Model)
+                        {
+                            <tr>
+                                <td style="font-weight: 600; color: var(--text-main);">@book.Title</td>
+                                <td>@book.Author</td>
+                                <td>@(book.Category ?? "Chưa phân loại")</td>
+                                <td>@(book.PublishYear?.ToString() ?? "N/A")</td>
+                                <td style="text-align: center;">
+                                    @if (book.Stock <= 0)
+                                    {
+                                        <span class="badge-premium badge-danger">Hết sách</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-premium badge-success">Còn lại: @book.Stock</span>
+                                    }
+                                </td>
+                                <td style="text-align: center;">
+                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                        <a asp-action="Edit" asp-route-id="@book.Id" class="btn-premium btn-premium-secondary btn-premium-sm">
+                                            <i class="fa-solid fa-pen-to-square"></i> Sửa
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@book.Id" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa cuốn sách này không?');" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-premium btn-premium-danger btn-premium-sm">
+                                                <i class="fa-solid fa-trash"></i> Xóa
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

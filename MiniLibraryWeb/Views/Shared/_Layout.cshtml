@@ -1,49 +1,86 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+}
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MiniLibraryManagement</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - Thư Viện Mini</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/MiniLibraryManagement.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MiniLibraryWeb.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MiniLibraryManagement</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <i class="fa-solid fa-book-open-reader"></i>
+            <span>MiniLibrary<span>.</span></span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item @(currentController == "Home" ? "active" : "")">
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Bảng điều khiển</span>
+                </a>
+            </li>
+            <li class="sidebar-item @(currentController == "Books" ? "active" : "")">
+                <a asp-controller="Books" asp-action="Index">
+                    <i class="fa-solid fa-book"></i>
+                    <span>Quản lý Sách</span>
+                </a>
+            </li>
+            <li class="sidebar-item @(currentController == "Readers" ? "active" : "")">
+                <a asp-controller="Readers" asp-action="Index">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Độc giả</span>
+                </a>
+            </li>
+            <li class="sidebar-item @(currentController == "Borrows" ? "active" : "")">
+                <a asp-controller="Borrows" asp-action="Index">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>Mượn / Trả Sách</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-title">
+                <h1>@(ViewData["PageTitle"] ?? "Thư Viện Mini")</h1>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+            <div class="header-meta">
+                <i class="fa-regular fa-calendar-days"></i>
+                <span>@DateTime.Now.ToString("dd/MM/yyyy")</span>
+            </div>
+        </header>
+
+        <main class="app-content">
+            <!-- Toast notification system -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert-premium alert-premium-success">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>@TempData["SuccessMessage"]</span>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert-premium alert-premium-danger">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>@TempData["ErrorMessage"]</span>
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - MiniLibraryManagement - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

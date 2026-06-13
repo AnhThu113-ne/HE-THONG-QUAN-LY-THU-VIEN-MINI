@@ -1,7 +1,18 @@
+using Microsoft.EntityFrameworkCore;
+using MiniLibraryWeb.Data;
+using MiniLibraryWeb.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Add database context
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register application services
+builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();
 
