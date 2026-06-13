@@ -1,0 +1,24 @@
+## Build folders
+bin/
+obj/
+
+## IDE folders
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+## App settings (Local development secrets / configurations)
+appsettings.Development.json
+appsettings.local.json
+
+## Other build artifacts
+publish/
+*.log
