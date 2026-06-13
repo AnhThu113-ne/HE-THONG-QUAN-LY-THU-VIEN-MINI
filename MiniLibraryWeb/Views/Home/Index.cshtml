@@ -1,8 +1,133 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model IEnumerable<MiniLibraryWeb.Models.Entities.BorrowTicket>
+@{
+    ViewData["Title"] = "Trang chủ";
+    ViewData["PageTitle"] = "Bảng điều khiển";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Metrics Cards Section -->
+<div class="metrics-grid">
+    <!-- Card 1: Books -->
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Tổng đầu sách</h3>
+            <div class="value">@ViewBag.TotalBooks</div>
+        </div>
+        <div class="metric-icon">
+            <i class="fa-solid fa-book"></i>
+        </div>
+    </div>
+
+    <!-- Card 2: Readers -->
+    <div class="metric-card indigo">
+        <div class="metric-info">
+            <h3>Độc giả đăng ký</h3>
+            <div class="value">@ViewBag.TotalReaders</div>
+        </div>
+        <div class="metric-icon">
+            <i class="fa-solid fa-users"></i>
+        </div>
+    </div>
+
+    <!-- Card 3: Active Borrows -->
+    <div class="metric-card success">
+        <div class="metric-info">
+            <h3>Sách đang mượn</h3>
+            <div class="value">@ViewBag.ActiveBorrows</div>
+        </div>
+        <div class="metric-icon">
+            <i class="fa-solid fa-receipt"></i>
+        </div>
+    </div>
+
+    <!-- Card 4: Overdue Borrows -->
+    <div class="metric-card warning">
+        <div class="metric-info">
+            <h3>Phiếu quá hạn</h3>
+            <div class="value">@ViewBag.OverdueBorrows</div>
+        </div>
+        <div class="metric-icon">
+            <i class="fa-solid fa-circle-exclamation"></i>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-top: 8px;">
+    <!-- Recent Borrows Table Card -->
+    <div class="page-card" style="flex: 2;">
+        <div class="page-card-header">
+            <div class="page-card-title">
+                <i class="fa-solid fa-clock" style="color: var(--primary);"></i>
+                <span>Giao dịch mượn sách gần đây</span>
+            </div>
+            <a asp-controller="Borrows" asp-action="Index" class="btn-premium btn-premium-secondary btn-premium-sm">Xem tất cả</a>
+        </div>
+        <div class="page-card-body">
+            @if (!Model.Any())
+            {
+                <div style="text-align: center; padding: 32px; color: var(--text-muted);">
+                    <i class="fa-solid fa-receipt" style="font-size: 36px; margin-bottom: 12px; opacity: 0.5;"></i>
+                    <p>Chưa có giao dịch mượn sách nào.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table-premium" style="font-size: 13px;">
+                        <thead>
+                            <tr>
+                                <th>Độc giả</th>
+                                <th>Sách</th>
+                                <th>Ngày mượn</th>
+                                <th>Hạn trả</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ticket in Model)
+                            {
+                                <tr>
+                                    <td style="font-weight: 600;">@ticket.Reader?.Name</td>
+                                    <td>@ticket.Book?.Title</td>
+                                    <td>@ticket.BorrowDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@ticket.DueDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @if (ticket.Status == "Returned")
+                                        {
+                                            <span class="badge-premium badge-success" style="padding: 2px 8px; font-size: 11px;">Đã trả</span>
+                                        }
+                                        else if (ticket.Status == "Overdue" || (ticket.Status == "Borrowed" && ticket.DueDate < DateTime.Today))
+                                        {
+                                            <span class="badge-premium badge-danger" style="padding: 2px 8px; font-size: 11px;">Quá hạn</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-premium badge-warning" style="padding: 2px 8px; font-size: 11px;">Đang mượn</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Quick Fine Stats Card -->
+    <div class="page-card" style="flex: 1; display: flex; flex-direction: column;">
+        <div class="page-card-header">
+            <div class="page-card-title">
+                <i class="fa-solid fa-hand-holding-dollar" style="color: var(--warning);"></i>
+                <span>Thống kê tiền phạt</span>
+            </div>
+        </div>
+        <div class="page-card-body" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; flex: 1; padding: 40px;">
+            <div style="background-color: var(--warning-soft); color: var(--warning); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 20px;">
+                <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+            <span style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; font-weight: 500; letter-spacing: 0.5px;">Tổng tiền phạt phát sinh</span>
+            <p style="font-size: 32px; font-weight: 800; color: var(--text-main); margin-top: 8px;">@ViewBag.TotalFines.ToString("N0") VND</p>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px; max-width: 240px;">Hệ thống tính phạt 5,000 VND cho mỗi ngày trả quá hạn quy định.</p>
+        </div>
+    </div>
 </div>

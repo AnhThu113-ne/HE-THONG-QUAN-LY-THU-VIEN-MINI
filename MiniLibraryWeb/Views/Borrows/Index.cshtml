@@ -1,0 +1,98 @@
+@model IEnumerable<MiniLibraryWeb.Models.Entities.BorrowTicket>
+@{
+    ViewData["Title"] = "Nhật ký Mượn Trả";
+    ViewData["PageTitle"] = "Nhật ký Mượn / Trả Sách";
+}
+
+<div class="page-card">
+    <div class="page-card-header">
+        <div class="page-card-title">
+            <i class="fa-solid fa-receipt" style="color: var(--primary);"></i>
+            <span>Danh sách phiếu mượn trả sách</span>
+        </div>
+        <a asp-action="Create" class="btn-premium btn-premium-primary">
+            <i class="fa-solid fa-file-invoice"></i> Lập phiếu mượn mới
+        </a>
+    </div>
+    <div class="page-card-body">
+        @if (!Model.Any())
+        {
+            <div style="text-align: center; padding: 48px; color: var(--text-muted);">
+                <i class="fa-solid fa-book-bookmark" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                <p>Chưa có dữ liệu mượn trả sách nào.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table-premium">
+                    <thead>
+                        <tr>
+                            <th>Mã độc giả</th>
+                            <th>Độc giả</th>
+                            <th>Tên sách</th>
+                            <th>Ngày mượn</th>
+                            <th>Hạn trả</th>
+                            <th>Ngày trả</th>
+                            <th>Trạng thái</th>
+                            <th style="text-align: right;">Tiền phạt</th>
+                            <th style="text-align: center;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ticket in Model)
+                        {
+                            var isOverdue = ticket.ReturnDate == null && ticket.DueDate < DateTime.Today;
+                            <tr>
+                                <td style="font-family: monospace; font-weight: 700; color: var(--text-muted);">
+                                    @ticket.Reader?.CardNumber
+                                </td>
+                                <td style="font-weight: 600;">
+                                    <a asp-controller="Readers" asp-action="Details" asp-route-id="@ticket.ReaderId" style="color: var(--text-main); text-decoration: underline;">
+                                        @ticket.Reader?.Name
+                                    </a>
+                                </td>
+                                <td>@ticket.Book?.Title</td>
+                                <td>@ticket.BorrowDate.ToString("dd/MM/yyyy")</td>
+                                <td>@ticket.DueDate.ToString("dd/MM/yyyy")</td>
+                                <td>@(ticket.ReturnDate?.ToString("dd/MM/yyyy") ?? "Chưa trả")</td>
+                                <td>
+                                    @if (ticket.Status == "Returned")
+                                    {
+                                        <span class="badge-premium badge-success">Đã trả</span>
+                                    }
+                                    else if (ticket.Status == "Overdue" || isOverdue)
+                                    {
+                                        <span class="badge-premium badge-danger">Quá hạn</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-premium badge-warning">Đang mượn</span>
+                                    }
+                                </td>
+                                <td style="text-align: right; font-weight: 700; color: @(ticket.FineAmount > 0 ? "var(--danger)" : "var(--text-main)");">
+                                    @(ticket.FineAmount > 0 ? ticket.FineAmount.ToString("N0") + " VND" : "0 VND")
+                                </td>
+                                <td style="text-align: center;">
+                                    @if (ticket.ReturnDate == null)
+                                    {
+                                        <form asp-action="Return" asp-route-id="@ticket.Id" method="post" onsubmit="return confirm('Xác nhận trả cuốn sách này và kiểm tra hạn trả?');" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-premium btn-premium-primary btn-premium-sm" style="background-color: var(--primary-light);">
+                                                <i class="fa-solid fa-rotate-left"></i> Trả sách
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: var(--text-muted); font-size: 13px; font-style: italic;">Hoàn thành</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

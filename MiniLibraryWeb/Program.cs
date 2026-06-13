@@ -14,6 +14,7 @@ builder.Services.AddControllersWithViews();
 // Register application services
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IReaderService, ReaderService>();
+builder.Services.AddScoped<IBorrowService, BorrowService>();
 
 var app = builder.Build();
 

@@ -1,4 +1,4 @@
-namespace MiniLibraryManagement.Models
+namespace MiniLibraryWeb.Models
 {
     public class ErrorViewModel
     {

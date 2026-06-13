@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MiniLibraryWeb.Models.Entities
 {
@@ -33,6 +34,7 @@ namespace MiniLibraryWeb.Models.Entities
 
         [Display(Name = "Tiền phạt (VND)")]
         [Range(0, double.MaxValue)]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal FineAmount { get; set; } = 0;
     }
 }
